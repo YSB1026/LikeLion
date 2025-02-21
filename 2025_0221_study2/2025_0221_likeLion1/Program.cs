@@ -10,7 +10,7 @@ namespace _2025_0221_likeLion1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("깃허브 연결");
+            Console.WriteLine("깃허브 연결 test");
         }
     }
 }
