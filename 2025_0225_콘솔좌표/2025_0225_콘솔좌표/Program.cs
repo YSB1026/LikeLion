@@ -10,6 +10,7 @@ using System.Xml.Linq;
 
 namespace _2025_0225_콘솔좌표
 {
+    //Snake 게임!
     static class Constant
     {
         public const int WIDTH = 80, HEIGHT = 25;
