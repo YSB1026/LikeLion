@@ -299,96 +299,98 @@ namespace _2025_0224_study1
 
             #endregion
 
-            /*
-             * 문제 1. 세 정수의 최대값 구하기
-                문제 설명:
-                사용자로부터 3개의 정수를 입력받아 그 중 가장 큰 값을 출력하는 프로그램을 작성하세요.
-                요구사항:사용자에게 세 개의 정수를 입력받습니다.
-                if문을 사용하여 가장 큰 정수를 결정합니다.
-                결과를 “최대값: X” 형식으로 출력합니다.
-             */
+            ///*
+            // * 문제 1. 세 정수의 최대값 구하기
+            //    문제 설명:
+            //    사용자로부터 3개의 정수를 입력받아 그 중 가장 큰 값을 출력하는 프로그램을 작성하세요.
+            //    요구사항:사용자에게 세 개의 정수를 입력받습니다.
+            //    if문을 사용하여 가장 큰 정수를 결정합니다.
+            //    결과를 “최대값: X” 형식으로 출력합니다.
+            // */
 
-            Console.WriteLine("문제 1 ");
-            int a = int.Parse(Console.ReadLine()), b= int.Parse(Console.ReadLine()), c = int.Parse(Console.ReadLine());
-            int max = 0;
-            if(a > b)
-            {
-                max = a>c ? a : c;
-            }
-            else
-            {
-                max = b>c ? b : c;
-            }
-            Console.WriteLine($"가장 큰 수 {max}");
+            //Console.WriteLine("문제 1 ");
+            //int a = int.Parse(Console.ReadLine()), b= int.Parse(Console.ReadLine()), c = int.Parse(Console.ReadLine());
+            //int max = 0;
+            //if(a > b)
+            //{
+            //    max = a>c ? a : c;
+            //}
+            //else
+            //{
+            //    max = b>c ? b : c;
+            //}
+            //Console.WriteLine($"가장 큰 수 {max}");
 
-            /*
-             * 문제 2. 점수에 따른 학점 평가
-                문제 설명:
-                학생의 점수를 입력받아 아래 기준에 따라 학점을 출력하는 프로그램을 작성하세요.
+            ///*
+            // * 문제 2. 점수에 따른 학점 평가
+            //    문제 설명:
+            //    학생의 점수를 입력받아 아래 기준에 따라 학점을 출력하는 프로그램을 작성하세요.
 
-                90 이상: A 학점
-                80 이상 90 미만: B 학점
-                70 이상 80 미만: C 학점
-                60 이상 70 미만: D 학점
-                60 미만: F 학점
-            */
+            //    90 이상: A 학점
+            //    80 이상 90 미만: B 학점
+            //    70 이상 80 미만: C 학점
+            //    60 이상 70 미만: D 학점
+            //    60 미만: F 학점
+            //*/
 
-            Console.WriteLine("문제 2 ");
-            int score = int.Parse(Console.ReadLine());
-            int scoreCase = score/10;
-            string grade;
-            if (scoreCase >= 9)
-            {
-                grade = "A";
-            }
-            else if (scoreCase >= 8)
-            {
-                grade = "B";
-            }
-            else if (scoreCase >= 7)
-            {
-                grade = "C";
-            }
-            else if (scoreCase >= 6)
-            {
-                grade = "D";
-            }
-            else
-            {
-                grade = "F";
-            }
+            //Console.WriteLine("문제 2 ");
+            //int score = int.Parse(Console.ReadLine());
+            //int scoreCase = score/10;
+            //string grade;
+            //if (scoreCase >= 9)
+            //{
+            //    grade = "A";
+            //}
+            //else if (scoreCase >= 8)
+            //{
+            //    grade = "B";
+            //}
+            //else if (scoreCase >= 7)
+            //{
+            //    grade = "C";
+            //}
+            //else if (scoreCase >= 6)
+            //{
+            //    grade = "D";
+            //}
+            //else
+            //{
+            //    grade = "F";
+            //}
 
-            Console.WriteLine($"Your grade is {grade}");
+            //Console.WriteLine($"Your grade is {grade}");
 
-            /*문제 3. 간단한 사칙연산 계산기
-            문제 설명:
-            사용자로부터 두 개의 숫자와 연산자(+, -, *, /)를 입력받아 해당 연산을 수행하고 결과를 출력하는 계산기 프로그램을 작성하세요.
-            요구사항:
+            ///*문제 3. 간단한 사칙연산 계산기
+            //문제 설명:
+            //사용자로부터 두 개의 숫자와 연산자(+, -, *, /)를 입력받아 해당 연산을 수행하고 결과를 출력하는 계산기 프로그램을 작성하세요.
+            //요구사항:
 
-            두 개의 숫자와 연산자 기호를 입력받습니다.
-            if문을 사용하여 연산자를 확인하고 해당 연산을 수행합니다.
-            나눗셈의 경우 0으로 나누는 상황을 처리하여 에러 메시지를 출력합니다.
-            결과는 “결과: X” 형식으로 출력합니다.
-            */
+            //두 개의 숫자와 연산자 기호를 입력받습니다.
+            //if문을 사용하여 연산자를 확인하고 해당 연산을 수행합니다.
+            //나눗셈의 경우 0으로 나누는 상황을 처리하여 에러 메시지를 출력합니다.
+            //결과는 “결과: X” 형식으로 출력합니다.
+            //*/
 
-            Console.WriteLine("문제 3 ");
+            //Console.WriteLine("문제 3 ");
 
-            Console.WriteLine("두 수 입력 ... ");
-            int n1 = int.Parse(Console.ReadLine()), n2 = int.Parse(Console.ReadLine());
-            Console.WriteLine("연산자 입력 ... ");
-            string oper = Console.ReadLine();
+            //Console.WriteLine("두 수 입력 ... ");
+            //int n1 = int.Parse(Console.ReadLine()), n2 = int.Parse(Console.ReadLine());
+            //Console.WriteLine("연산자 입력 ... ");
+            //string oper = Console.ReadLine();
 
-            if (oper == "+") Console.WriteLine(n1+n2);
-            else if (oper == "-") Console.WriteLine(n1-n2);
-            else if (oper == "*") Console.WriteLine(n1*n2);
-            else
-            {
+            //if (oper == "+") Console.WriteLine(n1+n2);
+            //else if (oper == "-") Console.WriteLine(n1-n2);
+            //else if (oper == "*") Console.WriteLine(n1*n2);
+            //else
+            //{
 
-                if(n2 == 0) Console.WriteLine("0으로 나눌 수 없습니다.");
-                else Console.WriteLine(n1/n2);
-            }
+            //    if(n2 == 0) Console.WriteLine("0으로 나눌 수 없습니다.");
+            //    else Console.WriteLine(n1/n2);
+            //}
 
-
+            string s = "";
+            s = String.Join(s,Console.ReadLine());
+            Console.WriteLine(s);
         }
     }
 }
