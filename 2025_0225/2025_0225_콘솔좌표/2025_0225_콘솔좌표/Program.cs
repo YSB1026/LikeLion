@@ -6,15 +6,19 @@ using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace _2025_0225_콘솔좌표
 {
     //Snake 게임!
+    #region Console width, height 설정
     static class Constant
     {
         public const int WIDTH = 80, HEIGHT = 25;
     }
+    #endregion
+    #region 좌표 클래스
     class Position
     {
         public int x;
@@ -26,15 +30,25 @@ namespace _2025_0225_콘솔좌표
         }
         public static bool operator ==(Position a, Position b)
         {
+            if (a is null || b is null)
+            {
+                return false;
+            }
             return a.x == b.x && a.y == b.y;
         }
         public static bool operator !=(Position a, Position b)
         {
+            if (a is null || b is null)
+            {
+                return false;
+            }
             bool case1 = a.x != b.x;
             bool case2 = a.y != b.y;
             return case1 || case2;
         }
     }
+    #endregion
+    #region 게임 보드 클래스
     class DrawBoard
     {
         string dash = "━";
@@ -68,19 +82,26 @@ namespace _2025_0225_콘솔좌표
             }
         }
     }
+#endregion
     class SnakeGame
     {
-        LinkedList<Position> snake;
-        DrawBoard drawBoard;
-        Random rand;
-        int direction = 0;//0: 오른쪽, 1: 아래, 2: 왼쪽, 3: 위
+        private Random rand;
+        private readonly DrawBoard drawBoard;
+        private LinkedList<Position> snake;
+        private Position food;
+        private int direction;
+        private bool isGameover;
         public SnakeGame()
         {
             Console.OutputEncoding = new System.Text.UTF8Encoding(false);
             Console.CursorVisible = false;
-            snake = new LinkedList<Position>();
-            drawBoard = new DrawBoard();
             rand = new Random();
+
+            drawBoard = new DrawBoard();
+            snake = new LinkedList<Position>();
+            food = new Position(-1,-1);
+            direction = 0;//0:오른쪽, 1:아래, 2:왼쪽, 3:위
+            isGameover = false;
 
             snake.AddFirst(new Position(Constant.WIDTH/2, Constant.HEIGHT/2));
             snake.AddLast(new Position(Constant.WIDTH/2+1, Constant.HEIGHT/2));
@@ -96,20 +117,42 @@ namespace _2025_0225_콘솔좌표
             Console.ReadKey();
         }
 
-        private void DrawGame()
-        {
-            drawBoard.Draw();
 
-            foreach (var pos in snake)
+        private void GenerateFood()//랜덤 좌표에 먹이 생성
+        {
+            if (food.x!=-1 && food.y!=-1) return;
+
+            int x = rand.Next(3, Constant.WIDTH-3);
+            int y = rand.Next(3, Constant.HEIGHT-3);
+            food.x = x;
+            food.y = y;
+        }
+
+        private void Input()
+        {
+            if (Console.KeyAvailable)
             {
-                Console.SetCursorPosition(pos.x, pos.y);
-                if (pos==snake.First.Value)
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                switch (key.Key)
                 {
-                    Console.Write("◎");
-                }
-                else
-                {
-                    Console.Write("○");
+                    case ConsoleKey.UpArrow://상
+                        direction = direction != 1 ? 3 : 1;
+                        break;
+                    case ConsoleKey.DownArrow://하
+                        direction = direction != 3 ? 1 : 3;
+                        //direction = 1;
+                        break;
+                    case ConsoleKey.LeftArrow://좌
+                        direction = direction != 0 ? 2 : 0;
+                        break;
+                    case ConsoleKey.RightArrow://우
+                        direction = direction != 2 ? 0 : 2;
+                        break;
+                    case ConsoleKey.Escape:
+                        isGameover = true;
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -133,68 +176,105 @@ namespace _2025_0225_콘솔좌표
                     newHead.y--;
                     break;
             }
+
+            //snake.AddFirst(newHead);
+            //snake.RemoveLast();
             snake.AddFirst(newHead);
-            snake.RemoveLast();
-        }
-        private void Input()
-        {
-            if (Console.KeyAvailable)
+            if (newHead == food)
             {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                switch (key.Key)
+                //snake.AddFirst(newHead);
+                food.x=-1;
+                food.y=-1;
+            }
+            else
+            {
+                //snake.AddFirst(newHead);
+                snake.RemoveLast();
+            }
+        }
+        private void DrawGame()
+        {
+            //board그리기
+            drawBoard.Draw();
+
+            //뱀그리기
+            foreach (var pos in snake)
+            {
+                Console.SetCursorPosition(pos.x, pos.y);
+                if (pos==snake.First.Value)
                 {
-                    case ConsoleKey.UpArrow://상
-                        direction = 3;
-                        break;
-                    case ConsoleKey.DownArrow://하
-                        direction = 1;
-                        break;
-                    case ConsoleKey.LeftArrow://좌
-                        direction = 2;
-                        break;
-                    case ConsoleKey.RightArrow://우
-                        direction = 0;
-                        break;
-                    case ConsoleKey.Escape:
-                        Environment.Exit(0);
-                        break;
+                    Console.Write("◎");
+                }
+                else
+                {
+                    Console.Write("○");
+                }
+            }
+
+            //먹이 그리기
+            if (food.x!=-1 && food.y!=-1)
+            {
+                Console.SetCursorPosition(food.x, food.y);
+                Console.Write("★");
+            }
+        }
+
+        private void CheckCrash()
+        {
+            Position head = snake.First.Value;
+            if (head.x<=1 || head.x>=Constant.WIDTH-1 || head.y<=1 || head.y>=Constant.HEIGHT-1)
+            {
+                isGameover = true;
+            }
+            for (int i = 1; i<snake.Count; i++)
+            {
+                if (head == snake.ElementAt(i))
+                {
+                    isGameover = true;
+                    break;
                 }
             }
         }
 
-        //ver2 추가해야할 로직
-        //1.뱀이 먹이를 먹었을 때 꼬리 늘어나는 로직
-        //2.Board 밖으로 갔을때 GameOver 로직
-        //3.사용자가 입력한 방향과 현재 방향이 반대일 때 입력 무시
-        //4.랜덤 좌표 먹이 생성 및 먹이를 먹었을 때 먹이를 새로운 위치에 생성
-        //
-        
-        //private void GenerateFood()//랜덤 좌표에 먹이 생성
-        //{
-                
-        //}
+        private void Gameover()
+        {
+            Console.Clear();
+            Console.SetCursorPosition(Constant.WIDTH/2-5, Constant.HEIGHT/2);
+            Console.WriteLine("💀Game Over💀");
+            Thread.Sleep(2000);
+        }
 
         public void Run()
         {
             DrawLoading();
 
-            while (true)
+            while (!isGameover)
             {
                 Console.Clear();
+                GenerateFood();
                 Input();
                 Move();
+                CheckCrash();
                 DrawGame();
                 Thread.Sleep(100);
             }
+
+            Gameover();
         }
+
 
     }
     class Program
     {
         static void Main(string[] args)
         {
+            Console.SetWindowSize(Constant.WIDTH, Constant.HEIGHT);
+            //콘솔 버퍼 크기로 설정
+            Console.SetBufferSize(Constant.WIDTH, Constant.HEIGHT);
+
             SnakeGame snakeGame = new SnakeGame();
             snakeGame.Run();
+
             #region 이전코드
             //Console.OutputEncoding = new System.Text.UTF8Encoding(false);
 
