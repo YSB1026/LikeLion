@@ -122,10 +122,8 @@ namespace _2025_0225_콘솔좌표
         {
             if (food.x!=-1 && food.y!=-1) return;
 
-            int x = rand.Next(3, Constant.WIDTH-3);
-            int y = rand.Next(3, Constant.HEIGHT-3);
-            food.x = x;
-            food.y = y;
+            food.x = rand.Next(2, Constant.WIDTH-1);
+            food.y = rand.Next(2, Constant.HEIGHT-1);
         }
 
         private void Input()
