@@ -6,7 +6,17 @@ using System.Threading;
 
 
 namespace _2025_0227_ShootingGame
-{
+
+    /*
+     * 추가할 만한 것들
+     * 1. 페이즈 추가
+     * 2. 아이템 추가
+     * ==============
+     * 개선 점
+     * 1. List말고 다른 자료구조 사용? -> 충돌 처리 로직 개선
+     * 2. missile / player 구분
+     * 3. move, attack 같은 로직 player,missile,enemy 클래스에 넣기
+    */
     class Point
     {
         int x, y;
