@@ -14,12 +14,12 @@ namespace _2025_0228_study1
     {
         public int Mineral { get; set; }
         public string Name { get; }
-        Marin()
+        public Marin()
         {
             Mineral = 50;
             Name = "마린";
         }
-        Marin(int mineral, string name)
+        public Marin(int mineral, string name)
         {
             Mineral=mineral;
             Name=name;
@@ -27,7 +27,7 @@ namespace _2025_0228_study1
 
         public void ShowInfo()
         {
-            Console.WriteLine(Mineral + " " + Name);
+            Console.WriteLine($"미네랄 : {Mineral,4}, 이름 : {Name,15}");
         }
     }
 
@@ -35,12 +35,12 @@ namespace _2025_0228_study1
     {
         public int Mineral { get; set; }
         public string Name { get; }
-        SCV()
+        public SCV()
         {
             Mineral = 50;
             Name = "SCV";
         }
-        SCV(int mineral, string name)
+        public SCV(int mineral, string name)
         {
             Mineral=mineral;
             Name=name;
@@ -48,7 +48,28 @@ namespace _2025_0228_study1
 
         public void ShowInfo()
         {
-            Console.WriteLine(Mineral + " " + Name);
+            Console.WriteLine($"미네랄 : {Mineral,4}, 이름 : {Name,-15}");
+        }
+    }
+
+    class Barruck
+    {
+        public int Mineral { get; }
+        public string Name { get; }
+        public Barruck()
+        {
+            Mineral = 150;
+            Name = "배럭";
+        }
+        public Barruck(int mineral, string name)
+        {
+            Mineral = mineral;
+            Name = name;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"미네랄 : {Mineral,4}, 이름 : {Name,-15}");
         }
     }
     class Person
@@ -72,22 +93,66 @@ namespace _2025_0228_study1
             Console.WriteLine("이름 : " + Name);
             Console.WriteLine("나이 : " + Age);
         }
+
     }
-    class Program
+
+    //미네랄 클래스
+    //Mineral 1500 기본
+    //7개 시작
+    //클래스화
+
+    class Mineral
+    {
+        public int Amount { get; private set; }
+        public Mineral(int amount = 1500)
+        {
+            Amount = amount;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"미네랄의 양 : {Amount}");
+        }
+    }
+
+    //game 클래스 만들어보자
+    class Game
+    {
+        public static int mineral;
+        public static int gas;
+        public static int curPopularity;
+
+        public static void ShowInfo()
+        {
+            Console.WriteLine($"미네랄 : {mineral}, 가스 : {gas}, 인구수 : {curPopularity}");
+        }
+    }
+    class Programs
     {
         static void Main(string[] args)
         {
-            #region 시간 관련 클래스
-            ////시간 관련 클래스들
-            //DateTime now = DateTime.Now;
-            //Console.WriteLine($"Current Date and Time : {now}");
+            //Person person = new Person();
+            //person.ShowInfo();
 
-            //TimeSpan duration = new TimeSpan(1, 30, 0);//1시간 30분
-            //Console.WriteLine($"Duration : {duration}");
-            #endregion
+            Game.mineral = 50;
+            Game.gas = 0;
+            Game.curPopularity = 10;
+            Game.ShowInfo();
 
-            Person person = new Person();
-            person.ShowInfo();
+            Marin m1 = new Marin(100, "앗쎄이 해병님");
+            SCV scv = new SCV(60, "고된 노동을 하는 노예");
+            Barruck b1 = new Barruck(150, "앗쎄이 해병들의 숙소");
+
+            m1.ShowInfo();
+            scv.ShowInfo();
+            b1.ShowInfo();
+            Mineral[] mineral = new Mineral[7];
+            for (int i = 0; i < mineral.Length; i++)
+            {
+                mineral[i] = new Mineral();
+                Console.Write($"{i+1}번 - ");
+                mineral[i].ShowInfo();
+            }
         }
     }
 }

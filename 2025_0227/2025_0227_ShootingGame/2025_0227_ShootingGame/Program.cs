@@ -105,6 +105,7 @@ namespace _2025_0227_ShootingGame
 
         public void Draw()
         {
+            //Console.Write(Symbol);
             for (int i = 0; i < Symbol.Length; i++)
             {
                 Console.SetCursorPosition(Position.X, Position.Y + i);
@@ -198,7 +199,7 @@ namespace _2025_0227_ShootingGame
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.W: if ((player.Position.Y - 1) > 0) player.Move(0, -1); break;
-                    case ConsoleKey.S: if ((player.Position.Y - 1) < Console.WindowHeight - 4) player.Move(0, 1); break;
+                    case ConsoleKey.S: if ((player.Position.Y - 1) < Console.WindowHeight - 5) player.Move(0, 1); break;
                     case ConsoleKey.A: if (player.Position.X > 0) player.Move(-1, 0); break;
                     case ConsoleKey.D: if (player.Position.X < Console.WindowWidth - 2) player.Move(1, 0); break;
                     case ConsoleKey.Spacebar: player.Fire(); break;
@@ -274,23 +275,23 @@ namespace _2025_0227_ShootingGame
                 }
             }
 
-            bool CheckCollision(Point obj1, Point obj2)
-            {
-                return Math.Abs(obj1.X - obj2.X) <= 1 && Math.Abs(obj1.Y - obj2.Y) <= 1;
-            }
+            //bool CheckCollision(Point obj1, Point obj2)
+            //{
+            //    return Math.Abs(obj1.X - obj2.X) <= 1 && Math.Abs(obj1.Y - obj2.Y) <= 1;
+            //}
 
-            bool CheckMissileCollision(Point enemyPos)
-            {
-                for (int i = player.Missiles.Count - 1; i >= 0; i--)
-                {
-                    if (CheckCollision(player.Missiles[i].Position, enemyPos))
-                    {
-                        player.Missiles.RemoveAt(i);
-                        return true;
-                    }
-                }
-                return false;
-            }
+            //bool CheckMissileCollision(Point enemyPos)
+            //{
+            //    for (int i = player.Missiles.Count - 1; i >= 0; i--)
+            //    {
+            //        if (CheckCollision(player.Missiles[i].Position, enemyPos))
+            //        {
+            //            player.Missiles.RemoveAt(i);
+            //            return true;
+            //        }
+            //    }
+            //    return false;
+            //}
         }
 
         class Program

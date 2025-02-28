@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{06066939-7778-4F78-BE74-F4E8F72B2B52}</ProjectGuid>
+    <ProjectGuid>{713040A3-C858-4633-992B-26C8EC7B3630}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>_2025_0228_study1</RootNamespace>
-    <AssemblyName>2025_0228_study1</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <RootNamespace>_2025_0228_Shooting2</RootNamespace>
+    <AssemblyName>2025_0228_Shooting2</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
