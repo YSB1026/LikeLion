@@ -1,7 +1,10 @@
-﻿using System;
+﻿using _2025_0227_ShootingGame;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Timers;
@@ -9,16 +12,6 @@ using System.Timers;
 
 namespace _2025_0227_ShootingGame
 {
-    /*
-     * 추가할 만한 것들
-     * 1. 페이즈 추가
-     * 2. 아이템 추가
-     * ==============
-     * 개선 점
-     * 1. List말고 다른 자료구조 사용? -> 충돌 처리 로직 개선
-     * 2. missile / player 구분
-     * 3. move, attack 같은 로직 player,missile,enemy 클래스에 넣기
-    */
     interface IGameObject
     {
         Point Position { get; }
@@ -30,7 +23,7 @@ namespace _2025_0227_ShootingGame
 
     class Point
     {
-        public int X {  get; private set; }
+        public int X { get; private set; }
         public int Y { get; private set; }
         public Point(int x, int y)
         {
@@ -38,16 +31,17 @@ namespace _2025_0227_ShootingGame
             Y = y;
         }
 
-        public Point Move(int dx, int dy)
+        public void Move(int dx, int dy)
         {
-            return new Point(X + dx, Y + dy);
+            X += dx;
+            Y += dy;
         }
-    }
+    }//Point
 
     class Missile : IGameObject
     {
         public Point Position { get; private set; }
-        public string Symbol { get; } = "->";
+        public string Sprite { get; } = "->";
 
         public Missile(int x, int y)
         {
@@ -56,20 +50,20 @@ namespace _2025_0227_ShootingGame
 
         public void Move(int dx = 1, int dy = 0)
         {
-            Position = Position.Move(dx, dy);
+            Position.Move(dx, dy);
         }
 
         public void Draw()
         {
             Console.SetCursorPosition(Position.X, Position.Y);
-            Console.Write(Symbol);
+            Console.Write(Sprite);
         }
 
         public bool CheckCollision(Point other)
         {
-            return Math.Abs(Position.X - other.X) <= 1 && Math.Abs(Position.Y - other.Y) <= 1;
+            return Math.Abs(Position.X - other.X) <= 1 && Position.Y == other.Y;
         }
-    }
+    }//Missile
 
     class Player : IGameObject
     {
@@ -77,7 +71,12 @@ namespace _2025_0227_ShootingGame
         public List<Missile> Missiles { get; private set; }
         public int Health { get; set; }
         public int Score { get; set; }
-        public string[] Symbol { get; } = new string[] { "@=", "🛸", "@=" };
+        public string[] Sprite { get; } = new string[] { "@=", "🛸", "@=" };
+        public int MissileCount { get; set; }
+        public bool Boosted { get; set; }
+
+        public int BosstedTime { get; set; }
+
         Stopwatch fireCool;
         long coolTime;
 
@@ -87,88 +86,129 @@ namespace _2025_0227_ShootingGame
             Missiles = new List<Missile>();
             fireCool = new Stopwatch();
             fireCool.Start();
-            coolTime = 300;
+            coolTime = 200;
             Health = 5;
+            MissileCount = 1;
+            Boosted = false;
         }
 
         public void Fire()
         {
             if (fireCool.ElapsedMilliseconds < coolTime) return;
-            Missiles.Add(new Missile(Position.X + 2, Position.Y + 1));
+ 
+            if (Boosted)
+            {
+                for (int i = 0; i < Sprite.Length; i++)
+                {
+                    Missiles.Add(new Missile(Position.X + 2, Position.Y + i));
+                }
+                
+                Boosted = false;
+            }
+            else
+            {
+                Missiles.Add(new Missile(Position.X + 2, Position.Y + 1));
+            }
+
             fireCool.Restart();
         }
 
         public void Move(int dx, int dy)
         {
-            Position = Position.Move(dx, dy);
+            Position.Move(dx, dy);
         }
 
         public void Draw()
         {
-            //Console.Write(Symbol);
-            for (int i = 0; i < Symbol.Length; i++)
+            //Console.Write(Sprite);
+            for (int i = 0; i < Sprite.Length; i++)
             {
                 Console.SetCursorPosition(Position.X, Position.Y + i);
-                Console.WriteLine(Symbol[i]);
+                Console.WriteLine(Sprite[i]);
             }
         }
 
         public bool CheckCollision(Point other)
         {
-            return Math.Abs(Position.X - other.X) <= 1 && Math.Abs(Position.Y - other.Y) <= 2;
+            return Math.Abs(Position.X - other.X) <= 1 && Math.Abs((Position.Y+1) - other.Y) <= 1;
         }
-    }
+    }//Player
 
     class Enemy : IGameObject
     {
         public Point Position { get; private set; }
-        public string Symbol { get; } = "☄";
-
+        public string Sprite { get; private set; } = "☄";
+        
         public Enemy(int x, int y)
         {
             Position = new Point(x, y);
         }
         public void Move(int dx = -1, int dy = 0)
         {
-            Position = Position.Move(dx, dy);
+            Position.Move(dx, dy);
         }
 
         public void Draw()
         {
             Console.SetCursorPosition(Position.X, Position.Y);
-            Console.Write(Symbol);
+            Console.Write(Sprite);
         }
         public bool CheckCollision(Point other)
         {
-            return Math.Abs(Position.X - other.X) <= 1 && Math.Abs(Position.Y - other.Y) <= 1;
+            return (Math.Abs(Position.X - other.X) <= 1) && (Position.Y == other.Y);
         }
-    }
+    }//Enemy
 
-    class ShootingGame
+    class Item : IGameObject
+    {
+        public Point Position { get; set; }
+        //public bool ItemLife { get; set; } = false;
+
+        public string Sprite = "🌟";
+
+        public Item(int x, int y)
+        {
+            Position = new Point(x, y);
+        }
+
+        public void Move(int dx = -1, int dy = 0)
+        {
+            Position.Move(dx, dy);
+        }
+
+        public void Draw()
+        {
+            Console.SetCursorPosition(Position.X, Position.Y);
+            Console.Write(Sprite);
+        }
+
+        public bool CheckCollision(Point other)
+        {
+            return Math.Abs(Position.X - other.X) <= 1 && Position.Y == other.Y;
+        }
+    }//Item
+
+    class ShootingGame//입력, 플레이어, 적 객체 관리
     {
         ConsoleKeyInfo keyInfo;
-        Player player;
-        List<Enemy> enemies;
-        Stopwatch stopwatch = new Stopwatch();
-        long prevSecond, currentSecond;
-        bool isEscape = false;
-
-        Stopwatch genTimer = new Stopwatch();
-        long genCoolTime = 400;
         Random rand = new Random();
 
+        Player player = new Player(1, 12);
+        List<Enemy> enemies = new List<Enemy>();
+        List<Item> items = new List<Item>();
+
+        int dwTime;
+        int genTime;
+
+        bool isEscape = false;
 
         public void Run()
         {
             Console.OutputEncoding = Encoding.UTF8;
             Console.CursorVisible = false;
 
-            genTimer.Start();
-            stopwatch.Start();
-            prevSecond = stopwatch.ElapsedMilliseconds;
-
-            player = new Player(0, 12);
-            enemies = new List<Enemy>();
+            dwTime = Environment.TickCount;
+            genTime = Environment.TickCount;
 
             while (player.Health > 0 && !isEscape)
             {
@@ -185,10 +225,11 @@ namespace _2025_0227_ShootingGame
 
         void GenEnemy()
         {
-            if (genTimer.ElapsedMilliseconds < genCoolTime) return;
-            int y = rand.Next(3, Console.WindowHeight - 3);
-            enemies.Add(new Enemy(Console.WindowWidth - 2, y));
-            genTimer.Restart();
+            if (genTime + 400 > Environment.TickCount) return;
+            genTime = Environment.TickCount;
+
+            int _y = rand.Next(3, Console.WindowHeight - 3);
+            enemies.Add(new Enemy(Console.WindowWidth - 2, _y));
         }
 
         void ReadInput()
@@ -208,27 +249,49 @@ namespace _2025_0227_ShootingGame
             }
         }
 
+        public void DrawUI()
+        {
+            Console.SetCursorPosition(63, 0);
+            Console.Write("┏━━━━━━━━━━━━━━┓");
+
+            Console.SetCursorPosition(63, 1);
+            Console.Write("┃              ┃");
+
+            Console.SetCursorPosition(65, 1);
+            Console.Write($"Score  : {player.Score,2}");
+
+            Console.SetCursorPosition(63, 2);
+            Console.Write("┃              ┃");
+
+            Console.SetCursorPosition(65, 2);
+            Console.Write($"Health : {player.Health,2}");
+
+            Console.SetCursorPosition(63, 3);
+            Console.Write("┗━━━━━━━━━━━━━━┛");
+        }
+
         void Display()
         {
-            Console.SetCursorPosition(0, 1);
-            Console.WriteLine($"체력 : {player.Health}\n점수 : {player.Score}");
-            currentSecond = stopwatch.ElapsedMilliseconds;
-            if (currentSecond - prevSecond >= 50)
+            if (dwTime + 50 < Environment.TickCount)
             {
-                Console.Clear();
-                prevSecond = currentSecond;
+                dwTime = Environment.TickCount;
 
+                Console.Clear();
+
+                DrawUI();
                 player.Draw();
                 MoveMissiles();
                 MoveEnemies();
+                CheckMissileCollision();
+                MoveItem();
             }
         }
-
         void MoveMissiles()
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            foreach (var missile in player.Missiles.ToList())
+            for (int i = player.Missiles.Count - 1; i >= 0; i--)
             {
+                var missile = player.Missiles[i];
                 missile.Draw();
                 missile.Move();
                 if (missile.Position.X >= Console.WindowWidth - 2)
@@ -247,60 +310,83 @@ namespace _2025_0227_ShootingGame
                 enemy.Draw();
                 enemy.Move();
 
-                if (enemy.CheckCollision(player.Position))//플레이어와 충돌 확인
+                if (enemy.CheckCollision(new Point(1, enemy.Position.Y)))//왼쪽 벽 충돌 확인 
+                {
+                    enemies.RemoveAt(i);
+                }
+                else if (player.CheckCollision(enemy.Position))//플레이어와 충돌 확인
                 {
                     player.Health--;
                     enemies.RemoveAt(i);
                 }
-                else if (enemy.Position.X <= 1)//맵 밖 나간지 확인
+            }
+        }
+        void CheckMissileCollision()
+        {
+            List<Missile> missiles = player.Missiles;
+
+            for (int i = missiles.Count - 1; i >= 0; i--)
+            {
+                var missile = missiles[i];
+
+                if (CheckEnemyCollision(missile))
                 {
-                    enemies.RemoveAt(i);
+                    missiles.RemoveAt(i);
                 }
-                else if (player.Missiles.Any(m => m.CheckCollision(enemy.Position)))//미사일 충돌 확인
+                else if (CheckItemCollision(missile))
                 {
-                    /*
-                     *var missile = player.Missiles.FirstOrDefault(m => m.CheckCollision(enemy.Position)); 
-                     *gpt 도움받음
-                     *그냥 2중 for문으로 확인했는데 LINQ, 람다식을 활용
-                     *FirstOrDefault 조건에 만족하는 첫번째 요소 없으면 default(null)
-                     *m = > m.Check~ 람다식, Missile m이 m.CheckCollision(적)을 만족하는 m을 반환
-                     */
-                    var missile = player.Missiles.FirstOrDefault(m => m.CheckCollision(enemy.Position));
-                    if (missile != null)
-                    {
-                        player.Missiles.Remove(missile);
-                        enemies.RemoveAt(i);
-                        player.Score += 100;
-                    }
+                    missiles.RemoveAt(i);
                 }
             }
-
-            //bool CheckCollision(Point obj1, Point obj2)
-            //{
-            //    return Math.Abs(obj1.X - obj2.X) <= 1 && Math.Abs(obj1.Y - obj2.Y) <= 1;
-            //}
-
-            //bool CheckMissileCollision(Point enemyPos)
-            //{
-            //    for (int i = player.Missiles.Count - 1; i >= 0; i--)
-            //    {
-            //        if (CheckCollision(player.Missiles[i].Position, enemyPos))
-            //        {
-            //            player.Missiles.RemoveAt(i);
-            //            return true;
-            //        }
-            //    }
-            //    return false;
-            //}
         }
 
-        class Program
+        bool CheckEnemyCollision(Missile missile)
         {
-            static void Main(string[] args)
+            var enemy = enemies.FirstOrDefault(e => e.CheckCollision(missile.Position));
+            if (enemy != null)
             {
-                ShootingGame game = new ShootingGame();
-                game.Run();
+                items.Add(new Item(enemy.Position.X, enemy.Position.Y));
+                enemies.Remove(enemy);
+                player.Score += 1;
+                return true;
             }
+            return false;
+        }
+
+        bool CheckItemCollision(Missile missile)
+        {
+            var item = items.FirstOrDefault(m => m.CheckCollision(missile.Position));
+            if (item != null)
+            {
+                player.Boosted = true;
+                items.Remove(item);
+                return true;
+            }
+            return false;
+        }
+        void MoveItem()
+        {
+            for (int i = items.Count - 1; i >= 0; i--)
+            {
+                var item = items[i];
+                item.Draw();
+                item.Move();
+
+                if (item.CheckCollision(new Point(1, item.Position.Y)))//왼쪽 벽 충돌 확인 
+                {
+                    items.RemoveAt(i);
+                }
+            }
+        }
+    }//Shooting Game
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            ShootingGame game = new ShootingGame();
+            game.Run();
         }
     }
 }
+
