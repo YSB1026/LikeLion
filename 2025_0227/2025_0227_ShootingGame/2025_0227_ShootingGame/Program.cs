@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Timers;
 
 
 namespace _2025_0227_ShootingGame
-
+{
     /*
      * 추가할 만한 것들
      * 1. 페이즈 추가
@@ -17,95 +19,177 @@ namespace _2025_0227_ShootingGame
      * 2. missile / player 구분
      * 3. move, attack 같은 로직 player,missile,enemy 클래스에 넣기
     */
+    interface IGameObject
+    {
+        Point Position { get; }
+        void Move(int dx, int dy);
+        void Draw();
+        bool CheckCollision(Point other);
+    }
+
+
     class Point
     {
-        int x, y;
+        public int X {  get; private set; }
+        public int Y { get; private set; }
         public Point(int x, int y)
         {
-            this.x = x;
-            this.y = y;
+            X = x;
+            Y = y;
         }
 
-        public int X { get { return x; } set { x = value; } }
-        public int Y { get { return y; } set { y = value; } }
+        public Point Move(int dx, int dy)
+        {
+            return new Point(X + dx, Y + dy);
+        }
     }
-    class Player
+
+    class Missile : IGameObject
     {
-        Point pos;
-        List<Point> missiles;
-        int health;
+        public Point Position { get; private set; }
+        public string Symbol { get; } = "->";
+
+        public Missile(int x, int y)
+        {
+            Position = new Point(x, y);
+        }
+
+        public void Move(int dx = 1, int dy = 0)
+        {
+            Position = Position.Move(dx, dy);
+        }
+
+        public void Draw()
+        {
+            Console.SetCursorPosition(Position.X, Position.Y);
+            Console.Write(Symbol);
+        }
+
+        public bool CheckCollision(Point other)
+        {
+            return Math.Abs(Position.X - other.X) <= 1 && Math.Abs(Position.Y - other.Y) <= 1;
+        }
+    }
+
+    class Player : IGameObject
+    {
+        public Point Position { get; private set; }
+        public List<Missile> Missiles { get; private set; }
+        public int Health { get; set; }
+        public int Score { get; set; }
+        public string[] Symbol { get; } = new string[] { "@=", "🛸", "@=" };
         Stopwatch fireCool;
         long coolTime;
 
         public Player(int x = 0, int y = 12)
         {
-            pos = new Point(x, y);
-            missiles = new List<Point>();
-
-            coolTime = 300;
+            Position = new Point(x, y);
+            Missiles = new List<Missile>();
             fireCool = new Stopwatch();
             fireCool.Start();
-            health = 5;
+            coolTime = 300;
+            Health = 5;
         }
+
         public void Fire()
         {
-            if (fireCool.ElapsedMilliseconds < coolTime) return; //쿨타임일땐 발사 X
-            missiles.Add(new Point(pos.X+2, pos.Y+1));
-            fireCool.Restart();//쿨타임 초기화
+            if (fireCool.ElapsedMilliseconds < coolTime) return;
+            Missiles.Add(new Missile(Position.X + 2, Position.Y + 1));
+            fireCool.Restart();
         }
-        public int X { get { return pos.X; } set { pos.X=value; } }
-        public int Y { get { return pos.Y; } set { pos.Y=value; } }
-        public long CoolTime { get { return coolTime; } set { coolTime = value; } }
-        public List<Point> Missiles { get { return missiles; }}
-        public Point Pos { get { return pos; } }
-        public int Health { get { return health; } set { health = value; } }
+
+        public void Move(int dx, int dy)
+        {
+            Position = Position.Move(dx, dy);
+        }
+
+        public void Draw()
+        {
+            for (int i = 0; i < Symbol.Length; i++)
+            {
+                Console.SetCursorPosition(Position.X, Position.Y + i);
+                Console.WriteLine(Symbol[i]);
+            }
+        }
+
+        public bool CheckCollision(Point other)
+        {
+            return Math.Abs(Position.X - other.X) <= 1 && Math.Abs(Position.Y - other.Y) <= 2;
+        }
     }
 
-    class Enermy
+    class Enemy : IGameObject
     {
-        List<Point> posList;
-        Random rand;
-        Stopwatch genCool;
-        long genTime;
-        public Enermy()
+        public Point Position { get; private set; }
+        public string Symbol { get; } = "☄";
+
+        public Enemy(int x, int y)
         {
-            posList = new List<Point>();
-            rand = new Random();
-            genTime = 400;
-            genCool = new Stopwatch();
-            genCool.Start();
+            Position = new Point(x, y);
+        }
+        public void Move(int dx = -1, int dy = 0)
+        {
+            Position = Position.Move(dx, dy);
         }
 
-        public void GenEnemy()
+        public void Draw()
         {
-            if (genCool.ElapsedMilliseconds < genTime) return;
-            int _y = -1;
-            _y = rand.Next(3, Console.WindowHeight-3);
-            Point _genPoint = new Point(Console.WindowWidth-2, _y);
-            posList.Add(_genPoint);
-            genCool.Restart();
-
+            Console.SetCursorPosition(Position.X, Position.Y);
+            Console.Write(Symbol);
         }
-        public List<Point> PosList { get { return posList; } }
-        public int GenTime { get; set; }
+        public bool CheckCollision(Point other)
+        {
+            return Math.Abs(Position.X - other.X) <= 1 && Math.Abs(Position.Y - other.Y) <= 1;
+        }
     }
+
     class ShootingGame
     {
         ConsoleKeyInfo keyInfo;
         Player player;
-        Enermy enemy;
-        readonly string[] playerString = new string[] {
-                "@=",
-                "🛸",
-                "@="
-        };
-        readonly string missileStr = "->";
-        readonly string enemyStr = "☄";
-
+        List<Enemy> enemies;
         Stopwatch stopwatch = new Stopwatch();
         long prevSecond, currentSecond;
         bool isEscape = false;
-        int score = 0;
+
+        Stopwatch genTimer = new Stopwatch();
+        long genCoolTime = 400;
+        Random rand = new Random();
+
+
+        public void Run()
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.CursorVisible = false;
+
+            genTimer.Start();
+            stopwatch.Start();
+            prevSecond = stopwatch.ElapsedMilliseconds;
+
+            player = new Player(0, 12);
+            enemies = new List<Enemy>();
+
+            while (player.Health > 0 && !isEscape)
+            {
+                GenEnemy();
+                ReadInput();
+                Display();
+            }
+
+            Console.Clear();
+            Console.SetCursorPosition(Console.WindowWidth / 2 - 5, Console.WindowHeight / 2);
+            Console.WriteLine("🦁Thank You🦁");
+            Thread.Sleep(3000);
+        }
+
+        void GenEnemy()
+        {
+            if (genTimer.ElapsedMilliseconds < genCoolTime) return;
+            int y = rand.Next(3, Console.WindowHeight - 3);
+            enemies.Add(new Enemy(Console.WindowWidth - 2, y));
+            genTimer.Restart();
+        }
+
         void ReadInput()
         {
             if (Console.KeyAvailable)
@@ -113,129 +197,109 @@ namespace _2025_0227_ShootingGame
                 keyInfo = Console.ReadKey(true);
                 switch (keyInfo.Key)
                 {
-                    case ConsoleKey.W: if ((player.Y-1) > 0) player.Y--; break;
-                    case ConsoleKey.S: if ((player.Y-1) < Console.WindowHeight - 4) player.Y++; break;
-                    case ConsoleKey.A: if (player.X > 0) player.X--; break;
-                    case ConsoleKey.D: if (player.X < Console.WindowWidth - 2) player.X++; break;
+                    case ConsoleKey.W: if ((player.Position.Y - 1) > 0) player.Move(0, -1); break;
+                    case ConsoleKey.S: if ((player.Position.Y - 1) < Console.WindowHeight - 4) player.Move(0, 1); break;
+                    case ConsoleKey.A: if (player.Position.X > 0) player.Move(-1, 0); break;
+                    case ConsoleKey.D: if (player.Position.X < Console.WindowWidth - 2) player.Move(1, 0); break;
                     case ConsoleKey.Spacebar: player.Fire(); break;
-                    case ConsoleKey.Escape: isEscape = true; break;// ESC 키로 종료
+                    case ConsoleKey.Escape: isEscape = true; break;
                 }
             }
         }
+
         void Display()
         {
-            Console.SetCursorPosition(0,1);
-            Console.WriteLine($"체력 : {player.Health}\n점수 : {score}");
+            Console.SetCursorPosition(0, 1);
+            Console.WriteLine($"체력 : {player.Health}\n점수 : {player.Score}");
+            currentSecond = stopwatch.ElapsedMilliseconds;
             if (currentSecond - prevSecond >= 50)
             {
                 Console.Clear();
-
                 prevSecond = currentSecond;
 
-                MovePlayer();
-                MoveMissile();
-                MoveEnemy();
+                player.Draw();
+                MoveMissiles();
+                MoveEnemies();
             }
         }
-        void MoveMissile()
+
+        void MoveMissiles()
         {
             Console.ForegroundColor = ConsoleColor.Green;
-
-            for (int i = player.Missiles.Count-1; i>=0; i--)
+            foreach (var missile in player.Missiles.ToList())
             {
-                Console.SetCursorPosition(player.Missiles[i].X, player.Missiles[i].Y-1);
-                Console.Write(missileStr);
-                player.Missiles[i].X++;
-                if (player.Missiles[i].X >= Console.WindowWidth-2)
+                missile.Draw();
+                missile.Move();
+                if (missile.Position.X >= Console.WindowWidth - 2)
                 {
-                    player.Missiles.RemoveAt(i);
-                    i--;
+                    player.Missiles.Remove(missile);
                 }
             }
-
             Console.ResetColor();
         }
 
-        bool CheckCollision(Point obj1, Point obj2)
+        void MoveEnemies()
         {
-            if (Math.Abs(obj1.X - obj2.X) <= 1 && Math.Abs(obj1.Y - obj2.Y) <= 1)
+            for (int i = enemies.Count - 1; i >= 0; i--)
             {
-                return true;
-            }
-            return false;
-        }
-        bool CheckMissileCollision(Point enemy)
-        {
-            for(int i= player.Missiles.Count-1; i>=0; i--)
-            {
-                if (CheckCollision(player.Missiles[i],enemy))
-                {
-                    player.Missiles.RemoveAt(i);
-                    return true;
-                } 
-            }
-            return false;
-        }
-        void MoveEnemy()
-        {
-            for (int i = enemy.PosList.Count-1; i >=0; i--)
-            { 
-                Console.SetCursorPosition(enemy.PosList[i].X, enemy.PosList[i].Y);
-                Console.Write(enemyStr);
-                enemy.PosList[i].X--;
-                if (CheckCollision(player.Pos, enemy.PosList[i]))
+                var enemy = enemies[i];
+                enemy.Draw();
+                enemy.Move();
+
+                if (enemy.CheckCollision(player.Position))//플레이어와 충돌 확인
                 {
                     player.Health--;
-                    enemy.PosList.RemoveAt(i);
+                    enemies.RemoveAt(i);
                 }
-                else if (enemy.PosList[i].X <= 1 || CheckMissileCollision(enemy.PosList[i]))
+                else if (enemy.Position.X <= 1)//맵 밖 나간지 확인
                 {
-                    enemy.PosList.RemoveAt(i);
-                    score+=100;
+                    enemies.RemoveAt(i);
+                }
+                else if (player.Missiles.Any(m => m.CheckCollision(enemy.Position)))//미사일 충돌 확인
+                {
+                    /*
+                     *var missile = player.Missiles.FirstOrDefault(m => m.CheckCollision(enemy.Position)); 
+                     *gpt 도움받음
+                     *그냥 2중 for문으로 확인했는데 LINQ, 람다식을 활용
+                     *FirstOrDefault 조건에 만족하는 첫번째 요소 없으면 default(null)
+                     *m = > m.Check~ 람다식, Missile m이 m.CheckCollision(적)을 만족하는 m을 반환
+                     */
+                    var missile = player.Missiles.FirstOrDefault(m => m.CheckCollision(enemy.Position));
+                    if (missile != null)
+                    {
+                        player.Missiles.Remove(missile);
+                        enemies.RemoveAt(i);
+                        player.Score += 100;
+                    }
                 }
             }
-        }
 
-        void MovePlayer()
-        {
-            for (int i = 0; i < playerString.Length; i++)
+            bool CheckCollision(Point obj1, Point obj2)
             {
-                Console.SetCursorPosition(player.X, (player.Y-1) + i);
-                Console.WriteLine(playerString[i]);
+                return Math.Abs(obj1.X - obj2.X) <= 1 && Math.Abs(obj1.Y - obj2.Y) <= 1;
+            }
+
+            bool CheckMissileCollision(Point enemyPos)
+            {
+                for (int i = player.Missiles.Count - 1; i >= 0; i--)
+                {
+                    if (CheckCollision(player.Missiles[i].Position, enemyPos))
+                    {
+                        player.Missiles.RemoveAt(i);
+                        return true;
+                    }
+                }
+                return false;
             }
         }
 
-        public void Run()
+        class Program
         {
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.CursorVisible = false;
-
-            stopwatch.Start();
-            prevSecond = stopwatch.ElapsedMilliseconds;
-
-            player = new Player(0,12);
-            enemy = new Enermy();
-            while (player.Health>0 && !isEscape)
+            static void Main(string[] args)
             {
-                enemy.GenEnemy();
-                currentSecond = stopwatch.ElapsedMilliseconds;
-                ReadInput();
-                Display();
-            }//while
-
-            Console.Clear();
-            Console.SetCursorPosition(Console.WindowWidth/2-5, Console.WindowHeight/2);
-            Console.WriteLine("🦁Thank You🦁");
-            Thread.Sleep(3000);
-        }
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            ShootingGame game = new ShootingGame();
-            game.Run();
+                ShootingGame game = new ShootingGame();
+                game.Run();
+            }
         }
     }
 }
