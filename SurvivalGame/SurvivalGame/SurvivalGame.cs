@@ -44,6 +44,7 @@ namespace SurvivalGame
         private bool _isGameOver, _isGetMapExpansion,_isPlayerWon;
         private int _directionX, _directionY;
         private EventResult _curEventResult;
+        private int drawCurby = 0;
         public SurvivalGame()
         {
             _player = new Player(MAX_MAP_SIZE);
@@ -64,6 +65,8 @@ namespace SurvivalGame
         }
         void DrawUIAndMap()
         {
+            drawCurby = (drawCurby + 1)%2;
+            Renderer.DrawCurby(drawCurby);
             Renderer.DrawMap(_mapManager.Map, _player);
             Renderer.DrawUI(_player, _mapManager.GetHalfActiveRange());
         }

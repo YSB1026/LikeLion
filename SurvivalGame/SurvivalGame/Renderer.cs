@@ -10,6 +10,63 @@ namespace SurvivalGame
 {
     static class Renderer
     {
+        readonly static string[] curby1 =
+{
+                "⢀⠔⠡⢑⠑⡄⠀⡀⡀⣀⢀⡀⠀⠀",
+                "⠬⡨⠨⡠⢑⠌⠕⡐⠨⠐⡐⡈⠍⠢⢄⠀⠀",
+                "⢇⢪⠨⡂⠕⡈⠴⢰⠁⡁⡒⢢⠡⢑⢐⢑⠩⢈⠒⡄",
+                "⢱⢑⢌⠢⢁⠂⢧⣴⡃⠠⣻⣴⡇⢅⠢⢑⠌⠔⡡⢪",
+                "⠀⢣⢑⠌⡐⢌⠺⣻⠂⡡⢘⠽⡑⠔⡌⡢⡑⢕⢬⠂",
+                "⠀⢸⡐⢅⢊⠢⡁⡂⢳⢯⡳⢐⠌⡌⡢⡒⡜⡎⠀",
+                "⠀⠈⢎⠢⠢⡑⡐⢌⢂⠕⡨⢢⢱⡪⣣⡫⣪⢝⣆⠀",
+                "⠀⠀⠈⣇⢇⢎⢔⠡⡢⡑⢬⢎⣗⣝⢮⢞⣗⢯⠖⠀",
+                "⠀⠀⠀⡳⡵⣕⢜⢜⢔⢕⢵⡫⣮⡺⡽⡵⣳⠋",
+                "⠀⠀⠀⢹⣪⢳⡫⣟⢮⣗⡟⣮⡳⡽⣝⠞⠁",
+                "⠀⠀⠀⠀⢳⢕⢕⢕⣝⢮⡇⠀⠈⠈⠀⠀",
+                "⠀⠀⠀⠀⠀⠙⠵⣳⢵⠏⠀⠀⠀     "
+        };
+
+        readonly static string[] curby2 =
+{
+                "⠀⠀⠀⠀⠀⠀⠀⠀⡀⣀⠠⡀⡀⡀⢀⠆⡑⢑⠰⡀",
+                "⠀⠀⠀⠀⠀⡠⢂⠣⠨⢐⠨⠐⠨⢐⠱⠨⡐⠡⡂⢕",
+                "⠠⡂⠍⠌⡪⢐⠡⢨⠊⢢⠂⠡⡱⢔⢈⠪⢨⠨⢢⢹",
+                "⢎⠄⢅⠕⡐⠅⠌⢜⣶⣗⠈⢸⣤⣞⠄⠌⠢⡑⡅⡇",
+                "⠘⡬⢢⢑⠌⡜⢌⠜⠽⡂⢅⠸⡝⡇⠌⢌⠌⠜⡜⠀",
+                "⠀⠈⡱⡥⡱⡨⡂⡪⢐⢝⣗⢗⢐⠨⡘⠔⡡⡑⡅⠀",
+                "⠀⢜⢮⣪⡪⡺⡜⣆⢕⢐⠌⢔⠐⢌⠔⡡⢢⢱⠁⠀",
+                "⠀⢹⡳⣳⢽⢕⡯⡺⡼⡰⡑⠔⡅⢕⢌⢜⢜⠀",
+                "⠀⠀⠹⢮⣳⡻⣺⢝⡮⡇⡇⡇⡇⣇⢧⡳⡳⠀",
+                "⠀⠀⠀⠁⠳⣝⢗⡯⣞⢽⣺⢽⡺⣕⢯⡺⡕",
+                "⠀⠀⠀⠀⠀⠀⠁⠁⠀⢸⡺⣕⢇⢇⢧⠳⠁⠀",
+                "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣎⣗⠽⠊⠀"
+        };
+        public static void DrawCurby(int i)
+        {
+            for (int _ = 0; _<curby1.Length; _++)
+            {
+                Console.SetCursorPosition(26, 1+_);
+                Console.Write(new string(' ', 21));
+            }
+            if (i==0) DrawCurby1();
+            else DrawCurby2();
+        }
+        public static void DrawCurby1()
+        {
+            for (int i = 0; i<curby1.Length; i++)
+            {
+                Console.SetCursorPosition(26, 1+i);
+                Console.Write(curby1[i]);
+            }
+        }
+        public static void DrawCurby2()
+        {
+            for (int i = 0; i<curby2.Length; i++)
+            {
+                Console.SetCursorPosition(26, 1+i);
+                Console.Write(curby2[i]);
+            }
+        }
         public static void DrawMap(MapTile[,] map, Player player)
         {
             //EraseConsoleArea(0, 0, 20);
@@ -70,11 +127,11 @@ namespace SurvivalGame
                 }
             }
         }
-
         public static void DrawUI(Player player, in int skills)
         {
             //// UI 관련 코드 추가
-            int y = 6;
+            ///
+            int y = 13;
             Console.SetCursorPosition(26, y);
             Console.Write("┏━━━━━━━━━━━━━━━━━━━┓");
             y++;
@@ -105,10 +162,10 @@ namespace SurvivalGame
         /// startY 디폴트 값 17
         /// </summary>
         /// <param name="messages"></param>
-        public static void DrawMessage(params string[] messages)
+        public static void DrawMessage(params string[] messages) 
         {
-            int startY = 17;
-            if (startY + messages.Length >= Console.WindowHeight) return;
+            int startY = 18;
+            if (startY + messages.Length >= Console.WindowHeight - 2) return;
 
             for (int i = 0; i<6; i++)
             {
