@@ -16,6 +16,9 @@ https://github.com/YSB1026/LikeLion/blob/main/2025_0227/2025_0227_ShootingGame/2
 
 # 멋사 게임콘(2025/03/01~2025/03/03, 3일)
 
+텍스트 기반 로그라이크 생존 게임!
+야생 멋사에서 살아남기
+
 https://github.com/YSB1026/LikeLion/tree/main/SurvivalGame/SurvivalGame
 
 velog - https://velog.io/@ysb_1026/250303-%EB%A9%8B%EC%82%AC-%EA%B2%8C%EC%9E%84%EC%BD%98-%EA%B0%9C%EB%B0%9C
