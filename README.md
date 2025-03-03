@@ -13,3 +13,11 @@ https://github.com/YSB1026/LikeLion/tree/main/2025_0225/2025_0225_%EC%BD%98%EC%8
 https://github.com/YSB1026/LikeLion/blob/main/2025_0227/2025_0227_ShootingGame/2025_0227_ShootingGame/Program.cs
 
 ![슈팅게임](https://github.com/user-attachments/assets/c5c299fa-ba26-4fc7-acd5-8c971eb45570)
+
+# 멋사 게임콘(2025/03/01~2025/03/03, 3일)
+
+https://github.com/YSB1026/LikeLion/tree/main/SurvivalGame/SurvivalGame
+
+velog - https://velog.io/@ysb_1026/250303-%EB%A9%8B%EC%82%AC-%EA%B2%8C%EC%9E%84%EC%BD%98-%EA%B0%9C%EB%B0%9C
+
+![제목 없는 동영상 - Clipchamp로 제작](https://github.com/user-attachments/assets/8e77382d-b005-4ef6-aeac-f0908ec36ad0)
