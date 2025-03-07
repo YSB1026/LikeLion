@@ -28,3 +28,10 @@ velog - https://velog.io/@ysb_1026/250303-%EB%A9%8B%EC%82%AC-%EA%B2%8C%EC%9E%84%
 커비 아스키 아트도 추가했다 :)
 
 ![커비추가](https://github.com/user-attachments/assets/7f97a3f9-97ff-4678-b21f-70e815f3e409)
+
+# 벽돌 깨기(과제)
+
+![제목 없는 동영상 - Clipchamp로 제작](https://github.com/user-attachments/assets/4bb31a06-a83b-44c2-ac5d-f54079a2f77f)
+
+https://github.com/YSB1026/LikeLion/tree/main/2025_0307/2025_0307_%EB%B2%BD%EB%8F%8C%EA%B9%A8%EA%B8%B0_%EA%B3%BC%EC%A0%9C/2025_0307_%EB%B2%BD%EB%8F%8C%EA%B9%A8%EA%B8%B0_%EA%B3%BC%EC%A0%9C
+
